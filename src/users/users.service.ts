@@ -13,7 +13,7 @@ export class UsersService {
     constructor(
         @InjectRepository(Users)private userRepository: Repository<Users>,
         private jwtService: JwtService
-    ){}
+    ) {}
 
     async signup(signUpDto: SignUpDto): Promise<Object>  {
         const [ user ] = await this.userRepository.findBy({ phone_number: signUpDto.phone_number });
