@@ -60,7 +60,7 @@ export class UsersController {
     return this.usersService.find_search_by_name_users(name);
   }
 
-    // Find By Name In User
+  // Find By Name In User
   @Get('search-admins/:name')
   find_search_by_name_admins(
     @Param('name') name: string
