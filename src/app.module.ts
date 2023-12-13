@@ -36,6 +36,7 @@ import { CategoriesModule } from './categories/categories.module';
       synchronize: true,
     }),
     UsersModule,
+    
     CategoriesModule,
   ],
   controllers: [],
