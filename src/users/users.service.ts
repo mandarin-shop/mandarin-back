@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpStatus, Injectable } from '@nestjs/common';
@@ -63,29 +63,51 @@ export class UsersService {
     
         const token = await this.getToken(user);
     
-        return  {
+        if(!user.is_admin) {
+          return  {
                     message: 'Sign in succesfully User', 
                     user: user,
                     status: HttpStatus.OK,
                     token
-                }
+                  }
+        } else {
+          return  {
+                    message: 'Sign in succesfully User', 
+                    user: user,
+                    status: HttpStatus.OK,
+                    token
+                  }   
+        }
     }
 
     async find_users(): Promise<Object> {
-        const users = await this.userRepository.find();
+        const users = await this.userRepository.findBy({ is_admin: false });
     
         if(users.length === 0) return { 
                                         message: 'Users Not Found', 
                                         status: HttpStatus.NOT_FOUND
                                       };
         return {
-                users: users,
+                users,
                 status: HttpStatus.OK,
                };
     }
 
+    async find_admins(): Promise<Object> {
+      const admins = await this.userRepository.findBy({ is_admin: true });
+    
+      if(admins.length === 0) return { 
+                                      message: 'Admins Not Found', 
+                                      status: HttpStatus.NOT_FOUND
+                                    };
+      return {
+              admins,
+              status: HttpStatus.OK,
+             };
+    }
+
     async find_one_user(id: number): Promise<Object> {
-        const [ user ] = await this.userRepository.findBy({ user_id: id });
+        const [ user ] = await this.userRepository.findBy({ user_id: id, is_admin: false });
     
         if (!user) return {
                             message: 'User Not Found',
@@ -95,6 +117,55 @@ export class UsersService {
                 user: user,
                 status: HttpStatus.OK
                };
+    }
+
+    async find_one_admin(id: number): Promise<Object> {
+      const [ admin ] = await this.userRepository.findBy({ user_id: id, is_admin: true });
+    
+      if (!admin) return {
+                          message: 'Admin Not Found',
+                          status: HttpStatus.NOT_FOUND
+                        };
+      return {
+              admin,
+              status: HttpStatus.OK
+             };
+    }
+
+    async find_search_by_name_users(name: string): Promise<Object> {
+      let users = await this.userRepository.find({
+        where : {
+          full_name : Like(`%${name}%`),
+          is_admin: false
+        }
+      });
+
+      if (users.length === 0) return {
+                            status: HttpStatus.NOT_FOUND,
+                            message: 'Person Not Found'
+                           }
+      return {    
+              status: HttpStatus.OK,
+              users
+             };
+    }
+
+    async find_search_by_name_admins(name: string): Promise<Object> {
+      let admins = await this.userRepository.find({
+        where : {
+          full_name : Like(`%${name}%`),
+          is_admin: true
+        }
+      });
+
+      if (admins.length === 0) return {
+                            status: HttpStatus.NOT_FOUND,
+                            message: 'Admin Not Found'
+                           }
+      return {    
+              status: HttpStatus.OK,
+              admins
+             };
     }
 
     async update_data(id: number, updateDataDto: UpdateDataDto): Promise<Object> {
@@ -165,6 +236,36 @@ export class UsersService {
         await this.userRepository.delete({ user_id: id });
     
         return HttpStatus.OK;
+    }
+
+    async is_admin_user(id: number): Promise<Object | HttpStatus> {
+      const [ user ] = await this.userRepository.findBy({ user_id: id });
+      if (!user) return {
+                            message: 'User Not Found',
+                            status: HttpStatus.NOT_FOUND
+                        };
+      
+      if (user.is_admin) {
+        await this.userRepository.update(
+          { 
+            user_id: id
+          },
+          {
+            is_admin: false
+          }
+        );
+      } else {
+        await this.userRepository.update(
+          { 
+            user_id: id
+          },
+          {
+            is_admin: true
+          }
+        );
+      }
+
+      return HttpStatus.OK;
     }
 
     async getToken(user: Users) {
