@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
-import { Like, Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpStatus, Injectable } from '@nestjs/common';
 
@@ -19,7 +19,7 @@ export class UsersService {
         const [ user ] = await this.userRepository.findBy({ phone_number: signUpDto.phone_number });
         if(user) return { 
                             message: 'phone number already exists',
-                            status: HttpStatus.CONFLICT
+                            status: HttpStatus.FORBIDDEN
                         };
     
         const hashed_password = await bcrypt.hash(signUpDto.password, 7);
