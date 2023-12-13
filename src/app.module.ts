@@ -35,7 +35,6 @@ import { Users } from './users/entities/user.entity';
     }),
     
     UsersModule,
-
   ],
   controllers: [],
   providers: [],
