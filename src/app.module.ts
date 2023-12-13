@@ -35,9 +35,7 @@ import { CategoriesModule } from './categories/categories.module';
       entities: [ Users, Category ],
       synchronize: true,
     }),
-    
     UsersModule,
-    
     CategoriesModule,
   ],
   controllers: [],
