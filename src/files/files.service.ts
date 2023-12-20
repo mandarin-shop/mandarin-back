@@ -12,7 +12,7 @@ import * as uuid from  'uuid';
 export class FilesService {
     async createFile(file: any): Promise<string>{
         try {
-            const fileName = process.env.API_HOST + uuid.v4()+`.jpg`;
+            const fileName = uuid.v4()+`.jpg`;
             const filePath = path.resolve(__dirname, '..', 'static');
             
             if (!fs.existsSync(filePath)) fs.mkdirSync(filePath, { recursive: true });
