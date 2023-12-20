@@ -6,9 +6,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
 import { Users } from './users/entities';
+import { Product } from './products/entities';
 import { Category } from './categories/entities';
+import { ProductImg } from './product_imgs/entities';
+
 import { UsersModule } from './users/users.module';
+import { ProductsModule } from './products/products.module';
 import { CategoriesModule } from './categories/categories.module';
+import { ProductImgsModule } from './product_imgs/product_imgs.module';
+
 
 @Module({
   imports: [
@@ -32,12 +38,16 @@ import { CategoriesModule } from './categories/categories.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [ Users, Category ],
+      entities: [ Users, Category, Product, ProductImg ],
       synchronize: true,
     }),
     UsersModule,
     
     CategoriesModule,
+    
+    ProductsModule,
+    
+    ProductImgsModule
   ],
   controllers: [],
   providers: [],
